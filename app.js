@@ -96,6 +96,22 @@ function processLine (line, prefix, defaultTags) {
     });
   }
 
+  // Redis metrics
+  else if (hasKeys(line, ['source', 'heroku-redis'])) {
+    if (process.env.DEBUG) {
+      console.log('Processing redis metrics');
+    }
+    let tags = tagsToArr({ source: line.source });
+    tags = _.union(tags, defaultTags);
+    let metrics = _.pick(line, (_, key) => key.startsWith('sample#'));
+    _.forEach(metrics, function (value, key) {
+      if (value !== true && parseInt(value)) {
+        key = key.split('#')[1];
+        statsd.gauge(prefix + 'heroku.redis.' + key, extractNumber(value), tags);
+      }
+    });
+  }
+
   // Scaling event
   else if (line.api === true && line.Scale === true) {
     if (process.env.DEBUG) {
