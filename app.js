@@ -112,7 +112,11 @@ function processLine (line, prefix, defaultTags) {
   // Default
   else {
     if (process.env.DEBUG) {
-      console.log('No match for line');
+      if (process.env.VERBOSE) {
+        console.log('No match for line', line);
+      } else {
+        console.log('No match for line');
+      }
     }
   }
 }
@@ -181,7 +185,7 @@ function loadAllowedAppsFromEnv () {
 }
 
 /**
- * 
+ *
  */
 function extractNumber (string) {
   if (typeof string === 'string') {
